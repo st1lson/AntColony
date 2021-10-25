@@ -1,12 +1,9 @@
-﻿using System;
+﻿using AntColony.Handlers;
 
 namespace AntColony
 {
     internal class Program
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-        }
+        static void Main(string[] args) => new InputHandler().Menu();
     }
 }
