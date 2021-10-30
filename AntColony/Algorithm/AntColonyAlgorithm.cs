@@ -10,13 +10,17 @@ namespace AntColony.Algorithm
         private readonly IGraph _graph;
         private readonly List<IAnt> _ants;
         private readonly int[,] _pheromones;
-        private const int Alpha = 3;
-        private const int Beta = 2;
-        private const double Rho = 0.6;
+        private readonly int Alpha;
+        private readonly int Beta;
+        private readonly double Rho;
 
-        public AntColonyAlgorithm(IGraph graph)
+        public AntColonyAlgorithm(IGraph graph, Config config)
         {
             _graph = graph;
+            Alpha = config.Alpha;
+            Beta = config.Beta;
+            Rho = config.Rho;
+
             _ants = InitAnts();
 
             _pheromones = new int[_graph.Size, _graph.Size];

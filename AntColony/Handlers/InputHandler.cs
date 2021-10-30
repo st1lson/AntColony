@@ -12,13 +12,15 @@ namespace AntColony.Handlers
         private readonly IGraph _graph;
         private readonly FileOperator _fileOperator;
         private readonly AntColonyAlgorithm _algorithm;
+        private readonly Config _config;
 
-        public InputHandler()
+        public InputHandler(Config config)
         {
+            _config = config;
             _menu = CreateMenu();
-            _fileOperator = new FileOperator("default.txt");
+            _fileOperator = new FileOperator(_config.Path);
             _graph = _fileOperator.DeserializeGraph();
-            _algorithm = new AntColonyAlgorithm(_graph);
+            _algorithm = new AntColonyAlgorithm(_graph, config);
         }
 
         public void Menu()
