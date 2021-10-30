@@ -1,4 +1,5 @@
 ﻿using AntColony.Core;
+using AntColony.Core.Graphs;
 using System;
 using System.IO;
 using System.Text;

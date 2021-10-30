@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AntColony.Core;
 using AntColony.Core.Ants;
+using AntColony.Core.Graphs;
 
 namespace AntColony.Algorithm
 {

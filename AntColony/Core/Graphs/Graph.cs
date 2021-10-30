@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace AntColony.Core
+namespace AntColony.Core.Graphs
 {
     internal class Graph : IGraph
     {

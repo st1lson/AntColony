@@ -1,4 +1,4 @@
-﻿namespace AntColony.Core
+﻿namespace AntColony.Core.Graphs
 {
     internal interface IGraph
     {
