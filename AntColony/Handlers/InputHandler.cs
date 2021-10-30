@@ -2,16 +2,24 @@
 using System.Text;
 using AntColony.Algorithm;
 using AntColony.Core;
+using AntColony.FileManager;
 
 namespace AntColony.Handlers
 {
     internal class InputHandler
     {
         private readonly string _menu;
-        private Graph _graph;
-        private AntColonyAlgorithm _algorithm;
+        private readonly IGraph _graph;
+        private readonly FileOperator _fileOperator;
+        private readonly AntColonyAlgorithm _algorithm;
 
-        public InputHandler() => _menu = CreateMenu();
+        public InputHandler()
+        {
+            _menu = CreateMenu();
+            _fileOperator = new FileOperator("default.txt");
+            _graph = _fileOperator.DeserializeGraph();
+            _algorithm = new AntColonyAlgorithm(_graph);
+        }
 
         public void Menu()
         {
@@ -39,8 +47,7 @@ namespace AntColony.Handlers
             switch (value)
             {
                 case 1:
-                    _algorithm ??= new AntColonyAlgorithm();
-                    _algorithm.TrySolve(_graph, out int result);
+                    _algorithm.TrySolve(out int result);
                     Console.WriteLine(result);
                     return;
                 case 2:

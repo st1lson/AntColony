@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AntColony.Core;
+using System;
 using System.IO;
 using System.Text;
 
@@ -11,22 +11,35 @@ namespace AntColony.FileManager
 
         public FileOperator(string path) => _path = path;
 
-        public List<int> DeserializeGraph()
+        public IGraph DeserializeGraph()
         {
-            List<int> data = new();
             using StreamReader reader = new(_path, Encoding.Default);
-            while(!reader.EndOfStream)
+            string line = reader.ReadLine();
+            if (!Int32.TryParse(line, out int size))
             {
-                string line = reader.ReadLine();
-                if (!Int32.TryParse(line, out int value))
-                {
-                    throw new Exception("Wront file format");
-                }
-
-                data.Add(value);
+                throw new Exception("Wront file format");
             }
 
-            return data;
+            int[,] matrix = new int[size, size];
+            int i = 0;
+            int j = 0;
+            while (!reader.EndOfStream)
+            {
+                line = reader.ReadLine();
+                int[] values = Array.ConvertAll(line.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
+
+                foreach (int value in values)
+                {
+                    matrix[i, j++] = value;
+                }
+
+                i++;
+                j = 0;
+            }
+
+            IGraph graph = new Graph(size, matrix);
+
+            return graph;
         }
     }
 }

@@ -7,20 +7,26 @@ namespace AntColony.Algorithm
 {
     internal class AntColonyAlgorithm
     {
+        private readonly IGraph _graph;
         private readonly List<IAnt> _ants;
-        private readonly List<(int, int)> _pheromones;
+        private readonly int[,] _pheromones;
+        private const int Alpha = 3;
+        private const int Beta = 2;
+        private const double Rho = 0.6;
 
-        public AntColonyAlgorithm()
+        public AntColonyAlgorithm(IGraph graph)
         {
-            _ants = new();
-            _pheromones = new();
+            _graph = graph;
+            _ants = InitAnts();
+
+            _pheromones = new int[_graph.Size, _graph.Size];
         }
 
-        public bool TrySolve(IGraph graph, out int result)
+        public bool TrySolve(out int result)
         {
             try
             {
-                result = Solve(graph);
+                result = Solve();
             }
             catch (Exception)
             {
@@ -31,14 +37,60 @@ namespace AntColony.Algorithm
             return true;
         }
 
-        private int Solve(IGraph graph)
+        private int Solve()
         {
-            if (graph is null || graph.Size == 0)
+            if (_graph is null || _graph.Size == 0)
             {
                 throw new Exception("Unable to resolve empty graph");
             }
 
+            foreach (IAnt ant in _ants)
+            {
+                if (ant.GetType() == typeof(EliteAnt))
+                {
+                    Console.WriteLine("Elite ant");
+                    int position = ant.StartPoint;
+                    MoveToPheromones(position);
+                }
+                else
+                {
+                    Console.WriteLine("Classic ant");
+                    int position = ant.StartPoint;
+                    ClassicMove(position);
+                }
+            }
+
             return default;
+        }
+
+        private void MoveToPheromones(int position)
+        {
+
+        }
+
+        private void ClassicMove(int position)
+        {
+
+        }
+
+        private List<IAnt> InitAnts()
+        {
+            List<IAnt> ants = new();
+            Random random = new();
+
+            for (int i = 0; i < Ant.Count; i++)
+            {
+                int startPoint = random.Next(_graph.Size);
+                ants.Add(new Ant(startPoint, 1));
+            }
+
+            for (int i = 0; i < EliteAnt.Count; i++)
+            {
+                int startPoint = random.Next(_graph.Size);
+                ants.Add(new EliteAnt(startPoint, 2));
+            }
+
+            return ants;
         }
     }
 }
