@@ -1,10 +1,10 @@
-﻿namespace AntColony.Core
+﻿namespace AntColony.Core.Ants
 {
-    internal class EliteAnt : IAnt
+    internal class Ant : IAnt
     {
         public int Pheromones { get; }
 
-        public EliteAnt(int pheromones)
+        public Ant(int pheromones)
         {
             Pheromones = pheromones;
         }

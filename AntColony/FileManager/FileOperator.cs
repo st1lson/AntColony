@@ -11,7 +11,7 @@ namespace AntColony.FileManager
 
         public FileOperator(string path) => _path = path;
 
-        public List<int> Read()
+        public List<int> DeserializeGraph()
         {
             List<int> data = new();
             using StreamReader reader = new(_path, Encoding.Default);

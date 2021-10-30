@@ -1,4 +1,4 @@
-﻿namespace AntColony.Core
+﻿namespace AntColony.Core.Ants
 {
     internal interface IAnt
     {
