@@ -21,7 +21,7 @@ namespace AntColony.Core.Graphs
             {
                 for (int j = 0; j < Size; j++)
                 {
-                    stringBuilder.Append(Matrix[i, j] + '\t');
+                    stringBuilder.Append(Matrix[i, j] + "\t");
                 }
 
                 stringBuilder.Append('\n');

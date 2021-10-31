@@ -10,7 +10,7 @@ namespace AntColony.Handlers
     internal class InputHandler
     {
         private readonly string _menu;
-        private readonly IGraph _graph;
+        private readonly Graph _graph;
         private readonly FileOperator _fileOperator;
         private readonly AntColonyAlgorithm _algorithm;
         private readonly Config _config;

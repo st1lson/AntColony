@@ -6,13 +6,15 @@ namespace AntColony.Core.Ants
     {
         public static int Count = 15;
         public int StartPoint { get; }
-        public int Pheromones { get; }
-        public List<(int, int)> BlackList { get; }
+        public double Pheromone { get; }
+        public int PathCost { get; set; }
+        public List<int> Path { get; }
+        public List<int> BlackList { get; }
 
-        public EliteAnt(int startPoint, int pheromones)
+        public EliteAnt(int startPoint, double pheromone)
         {
             StartPoint = startPoint;
-            Pheromones = pheromones;
+            Pheromone = pheromone;
             BlackList = new();
         }
     }

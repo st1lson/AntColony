@@ -12,7 +12,7 @@ namespace AntColony.FileManager
 
         public FileOperator(string path) => _path = path;
 
-        public IGraph DeserializeGraph()
+        public Graph DeserializeGraph()
         {
             using StreamReader reader = new(_path, Encoding.Default);
             string line = reader.ReadLine();
@@ -38,7 +38,7 @@ namespace AntColony.FileManager
                 j = 0;
             }
 
-            IGraph graph = new Graph(size, matrix);
+            Graph graph = new(size, matrix);
 
             return graph;
         }
