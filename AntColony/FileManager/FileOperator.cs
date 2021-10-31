@@ -14,7 +14,6 @@ namespace AntColony.FileManager
 
         public Graph DeserializeGraph()
         {
-            /*
             using StreamReader reader = new(_path, Encoding.Default);
             string line = reader.ReadLine();
             if (!Int32.TryParse(line, out int size))
@@ -28,7 +27,7 @@ namespace AntColony.FileManager
             while (!reader.EndOfStream)
             {
                 line = reader.ReadLine();
-                int[] values = Array.ConvertAll(line.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
+                int[] values = Array.ConvertAll(line.Split("\t", StringSplitOptions.RemoveEmptyEntries), int.Parse);
 
                 foreach (int value in values)
                 {
@@ -38,12 +37,25 @@ namespace AntColony.FileManager
                 i++;
                 j = 0;
             }
-            */
-            int size = 200;
-            int[,] matrix = InitMatrixes(size);
+
             Graph graph = new(size, matrix);
 
             return graph;
+        }
+
+        public void SerializeGraph(Graph graph)
+        {
+            using StreamWriter writer = new(_path, false, Encoding.Default);
+            writer.WriteLine(graph.Size);
+            for (int i = 0; i < graph.Size; i++)
+            {
+                for (int j = 0; j < graph.Size; j++)
+                {
+                    writer.Write(graph.Matrix[i, j] + "\t");
+                }
+
+                writer.WriteLine();
+            }
         }
 
         private static int[,] InitMatrixes(int size)
