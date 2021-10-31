@@ -15,7 +15,8 @@ namespace AntColony.Core.Ants
         {
             StartPoint = startPoint;
             Pheromone = pheromone;
-            Path = new List<int>();
+            Path = new();
+            Path.Add(StartPoint);
             BlackList = new();
         }
     }

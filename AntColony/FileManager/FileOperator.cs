@@ -14,6 +14,7 @@ namespace AntColony.FileManager
 
         public Graph DeserializeGraph()
         {
+            /*
             using StreamReader reader = new(_path, Encoding.Default);
             string line = reader.ReadLine();
             if (!Int32.TryParse(line, out int size))
@@ -37,10 +38,29 @@ namespace AntColony.FileManager
                 i++;
                 j = 0;
             }
-
+            */
+            int size = 50;
+            int[,] matrix = InitMatrixes(size);
             Graph graph = new(size, matrix);
 
             return graph;
+        }
+
+        private static int[,] InitMatrixes(int size)
+        {
+            Random rand = new();
+            int[,] distance = new int[size, size];
+            for (int i = 0; i < distance.GetLength(0); i++)
+            {
+                for (int j = i + 1; j < distance.GetLength(1); j++)
+                {
+                    int dist = rand.Next(1, 40);
+                    distance[i, j] = dist;
+                    distance[j, i] = dist;
+                }
+            }
+
+            return distance;
         }
     }
 }

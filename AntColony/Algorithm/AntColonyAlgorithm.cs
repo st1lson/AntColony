@@ -69,7 +69,7 @@ namespace AntColony.Algorithm
                         ClassicAntMove(ant, startPosition);
                     }
 
-                    if (ant.PathCost > bestWay)
+                    if (bestWay > ant.PathCost)
                     {
                         bestWay = ant.PathCost;
                     }
@@ -134,79 +134,81 @@ namespace AntColony.Algorithm
 
         private void EliteAntMove(IAnt ant, int position)
         {
-            List<int> possibleWays = FindPossibleWays(ant, position);
-
-            int nextPosition = 0;
-            double maxChance = 0;
-            foreach (int way in possibleWays)
+            for (int i = 0; i < _graph.Size; i++)
             {
-                if (_pheromones[position, way] > maxChance)
-                {
-                    maxChance = _pheromones[position, way];
-                    nextPosition = way;
-                }
-            }
+                List<int> possibleWays = FindPossibleWays(ant, position);
 
-            ant.PathCost += _graph.Matrix[position, nextPosition];
-            ant.Path.Add(nextPosition);
-            ant.BlackList.Add(position);
-            EliteAntMove(ant, nextPosition);
+                if (possibleWays.Count == 0)
+                {
+                    return;
+                }
+
+                int nextPosition = 0;
+                double maxChance = 0;
+                foreach (int way in possibleWays)
+                {
+                    if (_pheromones[position, way] > maxChance)
+                    {
+                        maxChance = _pheromones[position, way];
+                        nextPosition = way;
+                    }
+                }
+
+                ant.PathCost += _graph.Matrix[position, nextPosition];
+                ant.Path.Add(nextPosition);
+                ant.BlackList.Add(position);
+                position = nextPosition;
+            }
         }
 
         private void ClassicAntMove(IAnt ant, int position)
         {
-            List<int> possibleWays = FindPossibleWays(ant, position);
-
-            if (possibleWays.Count == 0)
+            for (int i = 0; i < _graph.Size; i++)
             {
-                return;
-            }
+                List<int> possibleWays = FindPossibleWays(ant, position);
 
-            int nextPosition = 0;
-            if (possibleWays.Count == 1)
-            {
-                nextPosition = possibleWays[0];
+                if (possibleWays.Count == 0)
+                {
+                    return;
+                }
+
+                double summary = 0;
+                foreach (int way in possibleWays)
+                {
+                    double eta = (double)1 / _graph.Matrix[position, way];
+                    if (_pheromones[position, way] == 0)
+                    {
+                        summary += Math.Pow(eta, _beta);
+                        continue;
+                    }
+
+                    summary += Math.Pow(eta, _beta) * Math.Pow(_pheromones[position, way], _alpha);
+                }
+
+                int nextPosition = 0;
+                double maxChance = 0;
+                foreach (int way in possibleWays)
+                {
+                    double eta = (double)1 / _graph.Matrix[position, way];
+                    double P = Math.Pow(eta, _beta) * Math.Pow(_pheromones[position, way], _alpha) / summary;
+                    if (P > maxChance)
+                    {
+                        maxChance = P;
+                        nextPosition = way;
+                    }
+                }
+
                 ant.PathCost += _graph.Matrix[position, nextPosition];
                 ant.Path.Add(nextPosition);
                 ant.BlackList.Add(position);
-                ClassicAntMove(ant, nextPosition);
+                position = nextPosition;
             }
-
-            double summary = 0;
-            foreach (int way in possibleWays)
-            {
-                double eta = (double) 1 / _graph.Matrix[position, way];
-                if (_pheromones[position, way] == 0)
-                {
-                    summary += Math.Pow(eta, _beta);
-                    continue;
-                }
-
-                summary += Math.Pow(eta, _beta) * Math.Pow(_pheromones[position, way], _alpha);
-            }
-
-            double maxChance = 0;
-            foreach (int way in possibleWays)
-            {
-                double eta = (double)1 / _graph.Matrix[position, way];
-                double P = Math.Pow(eta, _beta) * Math.Pow(_pheromones[position, way], _alpha) / summary;
-                if (P > maxChance)
-                {
-                    maxChance = P;
-                    nextPosition = way;
-                }
-            }
-
-            ant.PathCost += _graph.Matrix[position, nextPosition];
-            ant.Path.Add(nextPosition);
-            ant.BlackList.Add(position);
-            ClassicAntMove(ant, nextPosition);
         }
 
         private List<int> FindPossibleWays(IAnt ant, int position)
         {
             List<int> possibleWays = new();
-            for (int i = 0; i < _graph.Matrix.GetLength(0); i++)
+            for (int i = 0; i < _graph.Size; i++)
             {
                 if (!ant.BlackList.Contains(i) && i != position)
                 {
@@ -223,6 +225,11 @@ namespace AntColony.Algorithm
             {
                 for (int j = 0; j < _graph.Matrix.GetLength(1); j++)
                 {
+                    if (ant.PathCost == 0)
+                    {
+                        ant.PathCost = _lmin;
+                    }
+
                     double value = (1 - _rho) * _pheromones[i, j] * (_lmin / ant.PathCost);
                     if (value < 0)
                     {
