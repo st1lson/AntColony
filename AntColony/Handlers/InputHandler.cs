@@ -45,12 +45,29 @@ namespace AntColony.Handlers
             }
         }
 
+        public static void Print(IGraph graph)
+        {
+            StringBuilder stringBuilder = new();
+            for (int i = 0; i < graph.Matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < graph.Matrix.GetLength(1); j++)
+                {
+                    stringBuilder.Append(graph.Matrix[i, j] + "\t");
+                }
+
+                stringBuilder.Append("\n");
+            }
+
+            Console.WriteLine(stringBuilder.ToString());
+        }
+
         private void Action(int value)
         {
             switch (value)
             {
                 case 1:
                     _algorithm.TrySolve(out int result);
+                    Print(_graph);
                     Console.WriteLine(result);
                     return;
                 case 2:

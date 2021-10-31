@@ -39,7 +39,7 @@ namespace AntColony.FileManager
                 j = 0;
             }
             */
-            int size = 50;
+            int size = 200;
             int[,] matrix = InitMatrixes(size);
             Graph graph = new(size, matrix);
 
