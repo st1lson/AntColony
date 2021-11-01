@@ -65,13 +65,15 @@ namespace AntColony.Core.Ants
                 }
 
                 PathCost += graph.Matrix[position, nextPosition];
+                if (i == graph.Size - 1)
+                {
+                    nextPosition = StartPoint;
+                }
+
                 Path.Add(nextPosition);
                 PossibleWays.Remove(nextPosition);
                 position = nextPosition;
             }
-
-            Path.Add(position);
-            PathCost += graph.Matrix[position, StartPoint];
         }
     }
 }

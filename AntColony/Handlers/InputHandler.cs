@@ -22,8 +22,8 @@ namespace AntColony.Handlers
             _menu = CreateMenu();
             _fileOperator = new(_config.Path);
             _graph = _fileOperator.DeserializeGraph();
-            _algorithm = new(_graph, config);
             _random = new();
+            _algorithm = new(_graph, config, _random);
         }
 
         public void Menu()
@@ -68,7 +68,7 @@ namespace AntColony.Handlers
             switch (value)
             {
                 case 1:
-                    _algorithm.TrySolve(out int result);
+                    _algorithm.TrySolve(out Result result);
                     Print(_graph);
                     Console.WriteLine(result);
                     return;

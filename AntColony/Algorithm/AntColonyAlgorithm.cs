@@ -17,8 +17,9 @@ namespace AntColony.Algorithm
         private readonly int _beta;
         private readonly double _rho;
         private readonly int _lmin;
+        private readonly Random _random;
 
-        public AntColonyAlgorithm(Graph graph, Config config)
+        public AntColonyAlgorithm(Graph graph, Config config, Random random)
         {
             _graph = graph;
             _maxIterations = config.MaxIterations;
@@ -26,9 +27,10 @@ namespace AntColony.Algorithm
             _beta = config.Beta;
             _rho = config.Rho;
             _lmin = GreedySearch();
+            _random = random;
         }
 
-        public bool TrySolve(out int result)
+        public bool TrySolve(out Result result)
         {
             try
             {
@@ -36,14 +38,14 @@ namespace AntColony.Algorithm
             }
             catch (Exception)
             {
-                result = Int32.MaxValue;
+                result = default;
                 return false;
             }
 
             return true;
         }
 
-        public int Solve()
+        public Result Solve()
         {
             if (_graph is null || _graph.Size == 0)
             {
@@ -54,6 +56,11 @@ namespace AntColony.Algorithm
             int bestWay = Int32.MaxValue;
             _ants = InitAnts();
             _pheromones = InitPheromones();
+            Result result = new()
+            {
+                StartTime = DateTime.Now,
+            };
+
             while (iteration < _maxIterations)
             {
                 foreach (IAnt ant in _ants)
@@ -74,17 +81,28 @@ namespace AntColony.Algorithm
                     ChangePheromone(ant);
                 }
 
-                int currentBest = _ants.OrderBy(x => x.PathCost).First().PathCost;
+                IAnt bestAnt = _ants.OrderBy(x => x.PathCost).First();
+                int currentBest = bestAnt.PathCost;
                 if (currentBest < bestWay)
                 {
                     bestWay = currentBest;
+                    result.PathCost = bestWay;
+                    result.BestPath = bestAnt.Path;
+                }
+
+                if (iteration % 20 == 0)
+                {
+                    result.CurrentIteration = iteration;
+                    Console.WriteLine(result);
                 }
 
                 _ants = InitAnts();
                 iteration++;
             }
 
-            return bestWay;
+            result.SetTime();
+            result.CurrentIteration = _maxIterations;
+            return result;
         }
 
         private int GreedySearch()
@@ -160,17 +178,16 @@ namespace AntColony.Algorithm
         private List<IAnt> InitAnts()
         {
             List<IAnt> ants = new();
-            Random random = new();
 
             for (int i = 0; i < Ant.Count; i++)
             {
-                int startPoint = random.Next(_graph.Size);
+                int startPoint = _random.Next(_graph.Size);
                 ants.Add(new Ant(startPoint, 0.1));
             }
 
             for (int i = 0; i < EliteAnt.Count; i++)
             {
-                int startPoint = random.Next(_graph.Size);
+                int startPoint = _random.Next(_graph.Size);
                 ants.Add(new EliteAnt(startPoint, 0.2));
             }
 

@@ -2,7 +2,7 @@
 {
     internal interface IAlgorithm
     {
-        public bool TrySolve(out int result);
-        public int Solve();
+        public bool TrySolve(out Result result);
+        public Result Solve();
     }
 }
