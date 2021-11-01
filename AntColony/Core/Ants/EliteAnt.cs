@@ -1,4 +1,5 @@
 ﻿using AntColony.Core.Graphs;
+using System;
 using System.Collections.Generic;
 
 namespace AntColony.Core.Ants
@@ -7,13 +8,13 @@ namespace AntColony.Core.Ants
     {
         public static int Count = 15;
         public int StartPoint { get; }
-        public double Pheromone { get; }
+        public int Pheromone { get; }
         public int PathCost { get; set; }
         public List<int> Path { get; }
         public List<int> PossibleWays { get; set; }
         public List<int> BlackList { get; }
 
-        public EliteAnt(int startPoint, double pheromone)
+        public EliteAnt(int startPoint, int pheromone)
         {
             StartPoint = startPoint;
             Pheromone = pheromone;
@@ -39,7 +40,7 @@ namespace AntColony.Core.Ants
             return possibleWays;
         }
 
-        public void Move(Graph graph, double[,] pheromones, int beta = 0, int alpha = 0)
+        public void Move(Graph graph, int[,] pheromones, int beta = 0, int alpha = 0)
         {
             int position = StartPoint;
             for (int i = 0; i < graph.Size; i++)

@@ -10,7 +10,7 @@ namespace AntColony.Algorithm
     internal class AntColonyAlgorithm : IAlgorithm
     {
         private List<IAnt> _ants;
-        private double[,] _pheromones;
+        private int[,] _pheromones;
         private readonly Graph _graph;
         private readonly int _maxIterations;
         private readonly int _alpha;
@@ -160,7 +160,7 @@ namespace AntColony.Algorithm
             {
                 for (int j = i + 1; j < _graph.Size; j++)
                 {
-                    double decrease = (1 - _rho) * _pheromones[i, j];
+                    int decrease = (int)(1 - _rho) * _pheromones[i, j];
                     _pheromones[i, j] = _pheromones[j, i] = decrease;
                 }
             }
@@ -170,8 +170,10 @@ namespace AntColony.Algorithm
                 int current = ant.Path[i];
                 int next = ant.Path[i + 1];
 
-                double increase = (double)ant.PathCost / _lmin;
-                _pheromones[current, next] = _pheromones[next, current] += increase;
+                int increase = ant.PathCost / _lmin;
+                increase *= ant.Pheromone;
+                _pheromones[current, next] += increase;
+                _pheromones[next, current] = _pheromones[current, next];
             }
         }
 
@@ -182,13 +184,13 @@ namespace AntColony.Algorithm
             for (int i = 0; i < Ant.Count; i++)
             {
                 int startPoint = _random.Next(_graph.Size);
-                ants.Add(new Ant(startPoint, 0.1));
+                ants.Add(new Ant(startPoint, 1));
             }
 
             for (int i = 0; i < EliteAnt.Count; i++)
             {
                 int startPoint = _random.Next(_graph.Size);
-                ants.Add(new EliteAnt(startPoint, 0.2));
+                ants.Add(new EliteAnt(startPoint, 2));
             }
 
             foreach (IAnt ant in ants)
@@ -199,9 +201,9 @@ namespace AntColony.Algorithm
             return ants;
         }
 
-        private double[,] InitPheromones()
+        private int[,] InitPheromones()
         {
-            double[,] pheromones = new double[_graph.Size, _graph.Size];
+            int[,] pheromones = new int[_graph.Size, _graph.Size];
             for (int i = 0; i < _graph.Size; i++)
             {
                 for (int j = i + 1; j < _graph.Size; j++)

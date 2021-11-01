@@ -8,13 +8,13 @@ namespace AntColony.Core.Ants
     {
         public static int Count = 30;
         public int StartPoint { get; }
-        public double Pheromone { get; }
+        public int Pheromone { get; }
         public int PathCost { get; set; }
         public List<int> Path { get; }
         public List<int> PossibleWays { get; set; }
         public List<int> BlackList { get; }
 
-        public Ant(int startPoint, double pheromone)
+        public Ant(int startPoint, int pheromone)
         {
             StartPoint = startPoint;
             Pheromone = pheromone;
@@ -39,7 +39,7 @@ namespace AntColony.Core.Ants
 
             return possibleWays;
         }
-        public void Move(Graph graph, double[,] pheromones, int beta, int alpha)
+        public void Move(Graph graph, int[,] pheromones, int beta, int alpha)
         {
             int position = StartPoint;
             for (int i = 0; i < graph.Size; i++)
@@ -52,14 +52,14 @@ namespace AntColony.Core.Ants
                 }
 
                 int nextPosition = 0;
-                double maxChance = 0;
+                double chance = 0;
                 foreach (int way in PossibleWays)
                 {
                     double eta = (double)1 / graph.Matrix[position, way];
                     double P = Math.Pow(eta, beta) * Math.Pow(pheromones[position, way], alpha) / summary;
-                    if (P > maxChance)
+                    if (P > chance)
                     {
-                        maxChance = P;
+                        chance = P;
                         nextPosition = way;
                     }
                 }
