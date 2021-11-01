@@ -7,16 +7,16 @@ using AntColony.Core.Graphs;
 
 namespace AntColony.Algorithm
 {
-    internal class AntColonyAlgorithm
+    internal class AntColonyAlgorithm : IAlgorithm
     {
         private List<IAnt> _ants;
+        private double[,] _pheromones;
         private readonly Graph _graph;
         private readonly int _maxIterations;
         private readonly int _alpha;
         private readonly int _beta;
         private readonly double _rho;
         private readonly int _lmin;
-        private readonly double[,] _pheromones;
 
         public AntColonyAlgorithm(Graph graph, Config config)
         {
@@ -26,7 +26,6 @@ namespace AntColony.Algorithm
             _beta = config.Beta;
             _rho = config.Rho;
             _lmin = GreedySearch();
-            _pheromones = InitPheromones();
         }
 
         public bool TrySolve(out int result)
@@ -44,7 +43,7 @@ namespace AntColony.Algorithm
             return true;
         }
 
-        private int Solve()
+        public int Solve()
         {
             if (_graph is null || _graph.Size == 0)
             {
@@ -53,9 +52,10 @@ namespace AntColony.Algorithm
 
             int iteration = 0;
             int bestWay = Int32.MaxValue;
+            _ants = InitAnts();
+            _pheromones = InitPheromones();
             while (iteration < _maxIterations)
             {
-                _ants = InitAnts();
                 foreach (IAnt ant in _ants)
                 {
                     if (ant.GetType() == typeof(EliteAnt))
@@ -80,6 +80,7 @@ namespace AntColony.Algorithm
                     bestWay = currentBest;
                 }
 
+                _ants = InitAnts();
                 iteration++;
             }
 
@@ -94,12 +95,12 @@ namespace AntColony.Algorithm
             }
 
             int Lmin = Int32.MaxValue;
-            for (int i = 0; i < _graph.Matrix.GetLength(0); i++)
+            for (int i = 0; i < _graph.Size; i++)
             {
                 int L = 0;
                 List<int> possibleWays = new();
 
-                for (int j = 0; j < _graph.Matrix.GetLength(0); j++)
+                for (int j = 0; j < _graph.Size; j++)
                 {
                     possibleWays.Add(j);
                 }
@@ -137,9 +138,9 @@ namespace AntColony.Algorithm
 
         private void ChangePheromone(IAnt ant)
         {
-            for (int i = 0; i < _graph.Matrix.GetLength(0); i++)
+            for (int i = 0; i < _graph.Size; i++)
             {
-                for (int j = i + 1; j < _graph.Matrix.GetLength(1); j++)
+                for (int j = i + 1; j < _graph.Size; j++)
                 {
                     double decrease = (1 - _rho) * _pheromones[i, j];
                     _pheromones[i, j] = _pheromones[j, i] = decrease;

@@ -57,7 +57,7 @@ namespace AntColony.Handlers
                     stringBuilder.Append(graph.Matrix[i, j] + "\t");
                 }
 
-                stringBuilder.Append("\n");
+                stringBuilder.Append('\n');
             }
 
             Console.WriteLine(stringBuilder.ToString());

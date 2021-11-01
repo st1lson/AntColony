@@ -7,7 +7,7 @@ namespace AntColony.Core.Graphs
     {
         public int Size { get; }
 
-        public int[,] Matrix { get; private set; }
+        public int[,] Matrix { get; }
 
         public Graph(int size, int[,] matrix)
         {
