@@ -10,7 +10,7 @@ namespace AntColony.Algorithm
     internal class AntColonyAlgorithm : IAlgorithm
     {
         private List<IAnt> _ants;
-        private int[,] _pheromones;
+        private double[,] _pheromones;
         private readonly Graph _graph;
         private readonly int _maxIterations;
         private readonly int _alpha;
@@ -32,7 +32,8 @@ namespace AntColony.Algorithm
 
         public bool TrySolve(out Result result)
         {
-            try
+            result = Solve();
+            /*try
             {
                 result = Solve();
             }
@@ -40,7 +41,7 @@ namespace AntColony.Algorithm
             {
                 result = default;
                 return false;
-            }
+            }*/
 
             return true;
         }
@@ -77,17 +78,17 @@ namespace AntColony.Algorithm
                                  beta: _beta,
                                  alpha: _alpha);
                     }
-
-                    ChangePheromone(ant);
                 }
 
                 IAnt bestAnt = _ants.OrderBy(x => x.PathCost).First();
                 int currentBest = bestAnt.PathCost;
-                if (currentBest < bestWay)
+                if (bestWay > currentBest)
                 {
+                    int[] bestPath = new int[bestAnt.Path.Count];
+                    bestAnt.Path.CopyTo(bestPath);
+                    result.BestPath = bestPath.ToList();
+                    result.PathCost = currentBest;
                     bestWay = currentBest;
-                    result.PathCost = bestWay;
-                    result.BestPath = bestAnt.Path;
                 }
 
                 if (iteration % 20 == 0)
@@ -96,7 +97,8 @@ namespace AntColony.Algorithm
                     Console.WriteLine(result);
                 }
 
-                _ants = InitAnts();
+                ChangePheromone();
+                UpdateAnts();
                 iteration++;
             }
 
@@ -154,26 +156,41 @@ namespace AntColony.Algorithm
             return Lmin;
         }
 
-        private void ChangePheromone(IAnt ant)
+        private void ChangePheromone()
         {
             for (int i = 0; i < _graph.Size; i++)
             {
                 for (int j = i + 1; j < _graph.Size; j++)
                 {
-                    int decrease = (int)(1 - _rho) * _pheromones[i, j];
+                    double decrease = _rho * _pheromones[i, j];
                     _pheromones[i, j] = _pheromones[j, i] = decrease;
                 }
             }
 
-            for (int i = 0; i < ant.Path.Count - 1; i++)
+            foreach (IAnt ant in _ants)
             {
-                int current = ant.Path[i];
-                int next = ant.Path[i + 1];
+                for (int i = 0; i < ant.Path.Count - 1; i++)
+                {
+                    int current = ant.Path[i];
+                    int next = ant.Path[i + 1];
 
-                int increase = ant.PathCost / _lmin;
-                increase *= ant.Pheromone;
-                _pheromones[current, next] += increase;
-                _pheromones[next, current] = _pheromones[current, next];
+                    double increase = (double)_lmin / ant.PathCost;
+                    increase *= (double)ant.Pheromone;
+                    _pheromones[current, next] += increase;
+                    _pheromones[next, current] = _pheromones[current, next];
+                }
+            }
+        }
+
+        private void UpdateAnts()
+        {
+            foreach (IAnt ant in _ants)
+            {
+                ant.StartPoint = _random.Next(_graph.Size);
+                ant.PathCost = 0;
+                ant.Path.Clear();
+                ant.Path.Add(ant.StartPoint);
+                ant.PossibleWays = ant.InitWays(_graph.Size);
             }
         }
 
@@ -184,13 +201,13 @@ namespace AntColony.Algorithm
             for (int i = 0; i < Ant.Count; i++)
             {
                 int startPoint = _random.Next(_graph.Size);
-                ants.Add(new Ant(startPoint, 1));
+                ants.Add(new Ant(startPoint, 5));
             }
 
             for (int i = 0; i < EliteAnt.Count; i++)
             {
                 int startPoint = _random.Next(_graph.Size);
-                ants.Add(new EliteAnt(startPoint, 2));
+                ants.Add(new EliteAnt(startPoint, 10));
             }
 
             foreach (IAnt ant in ants)
@@ -201,9 +218,9 @@ namespace AntColony.Algorithm
             return ants;
         }
 
-        private int[,] InitPheromones()
+        private double[,] InitPheromones()
         {
-            int[,] pheromones = new int[_graph.Size, _graph.Size];
+            double[,] pheromones = new double[_graph.Size, _graph.Size];
             for (int i = 0; i < _graph.Size; i++)
             {
                 for (int j = i + 1; j < _graph.Size; j++)

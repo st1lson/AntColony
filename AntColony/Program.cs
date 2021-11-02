@@ -11,7 +11,7 @@ namespace AntColony
         {
             string data = File.ReadAllText("config.json");
             Config config = JsonConvert.DeserializeObject<Config>(data);
-            new InputHandler(config).Menu(); 
+            new InputHandler(config).Menu();
         }
     }
 }

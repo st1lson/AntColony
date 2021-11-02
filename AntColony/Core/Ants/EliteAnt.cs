@@ -7,12 +7,11 @@ namespace AntColony.Core.Ants
     internal class EliteAnt : IAnt
     {
         public static int Count = 15;
-        public int StartPoint { get; }
+        public int StartPoint { get; set; }
         public int Pheromone { get; }
         public int PathCost { get; set; }
         public List<int> Path { get; }
         public List<int> PossibleWays { get; set; }
-        public List<int> BlackList { get; }
 
         public EliteAnt(int startPoint, int pheromone)
         {
@@ -21,7 +20,6 @@ namespace AntColony.Core.Ants
             Path = new();
             Path.Add(StartPoint);
             PossibleWays = new();
-            BlackList = new();
         }
 
         public List<int> InitWays(int size)
@@ -40,7 +38,7 @@ namespace AntColony.Core.Ants
             return possibleWays;
         }
 
-        public void Move(Graph graph, int[,] pheromones, int beta = 0, int alpha = 0)
+        public void Move(Graph graph, double[,] pheromones, int beta = 0, int alpha = 0)
         {
             int position = StartPoint;
             for (int i = 0; i < graph.Size; i++)

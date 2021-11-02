@@ -7,12 +7,11 @@ namespace AntColony.Core.Ants
     internal class Ant : IAnt
     {
         public static int Count = 30;
-        public int StartPoint { get; }
+        public int StartPoint { get; set; }
         public int Pheromone { get; }
         public int PathCost { get; set; }
         public List<int> Path { get; }
         public List<int> PossibleWays { get; set; }
-        public List<int> BlackList { get; }
 
         public Ant(int startPoint, int pheromone)
         {
@@ -21,7 +20,6 @@ namespace AntColony.Core.Ants
             Path = new();
             Path.Add(StartPoint);
             PossibleWays = new();
-            BlackList = new();
         }
 
         public List<int> InitWays(int size)
@@ -39,9 +37,10 @@ namespace AntColony.Core.Ants
 
             return possibleWays;
         }
-        public void Move(Graph graph, int[,] pheromones, int beta, int alpha)
+        public void Move(Graph graph, double[,] pheromones, int beta, int alpha)
         {
             int position = StartPoint;
+            Random random = new();
             for (int i = 0; i < graph.Size; i++)
             {
                 double summary = 0;
@@ -52,15 +51,16 @@ namespace AntColony.Core.Ants
                 }
 
                 int nextPosition = 0;
+                double randomChance = random.NextDouble();
                 double chance = 0;
                 foreach (int way in PossibleWays)
                 {
                     double eta = (double)1 / graph.Matrix[position, way];
-                    double P = Math.Pow(eta, beta) * Math.Pow(pheromones[position, way], alpha) / summary;
-                    if (P > chance)
+                    chance += Math.Pow(eta, beta) * Math.Pow(pheromones[position, way], alpha) / summary;
+                    if (chance > randomChance)
                     {
-                        chance = P;
                         nextPosition = way;
+                        break;
                     }
                 }
 
@@ -70,8 +70,8 @@ namespace AntColony.Core.Ants
                     nextPosition = StartPoint;
                 }
 
-                Path.Add(nextPosition);
                 PossibleWays.Remove(nextPosition);
+                Path.Add(nextPosition);
                 position = nextPosition;
             }
         }
