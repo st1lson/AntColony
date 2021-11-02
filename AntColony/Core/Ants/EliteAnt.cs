@@ -1,5 +1,4 @@
 ﻿using AntColony.Core.Graphs;
-using System;
 using System.Collections.Generic;
 
 namespace AntColony.Core.Ants

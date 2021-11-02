@@ -32,8 +32,7 @@ namespace AntColony.Algorithm
 
         public bool TrySolve(out Result result)
         {
-            result = Solve();
-            /*try
+            try
             {
                 result = Solve();
             }
@@ -41,7 +40,7 @@ namespace AntColony.Algorithm
             {
                 result = default;
                 return false;
-            }*/
+            }
 
             return true;
         }
